@@ -1,0 +1,8 @@
+#!/bin/bash
+
+version=2
+
+docker build -t caub/nginx-dev:latest -t caub/nginx-dev:$version .
+docker tag caub/nginx-dev:latest caub/nginx-dev:$version
+docker push caub/nginx-dev:latest
+docker push caub/nginx-dev:$version

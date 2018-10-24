@@ -1,8 +1,7 @@
 #!/bin/bash
 
-version=2.1
-
-docker build -t caub/nginx-dev:latest -t caub/nginx-dev:$version .
-docker tag caub/nginx-dev:latest caub/nginx-dev:$version
-docker push caub/nginx-dev:latest
-docker push caub/nginx-dev:$version
+for d in */; do
+  dir="${d::-1}"
+  docker build -t caub/$dir:latest $dir -f $dir/Dockerfile
+  docker push caub/$dir
+done

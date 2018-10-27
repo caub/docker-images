@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y wget --no-install-recommends \
 
 WORKDIR /home/node
 USER node
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
-RUN npm i puppeteer
+RUN PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1 npm i puppeteer
 
 CMD ["google-chrome-unstable"]

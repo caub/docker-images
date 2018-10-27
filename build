@@ -1,7 +1,10 @@
 #!/bin/bash
 
-for d in */; do
-  dir="${d::-1}"
+ds=*/
+if [[ $1 ]]; then ds=$1; fi
+
+for d in $ds; do
+  dir=$(basename $d)
   docker build -t caub/$dir:latest $dir -f $dir/Dockerfile
   docker push caub/$dir
 done

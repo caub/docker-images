@@ -1,10 +1,23 @@
 FROM debian:9.5-slim
 
-RUN groupadd --gid 1000 node \
-  && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
+ENV NODE_VERSION 11.1.0
 
+# diff with https://github.com/nodejs/docker-node/blob/master/11/slim/Dockerfile dirmngr needed for debian:9.5-slim
 # gpg keys listed at https://github.com/nodejs/node#release-team
-RUN apt-get update && apt-get install -yq gnupg dirmngr --no-install-recommends && set -ex \
+RUN buildDeps='xz-utils' \
+  && ARCH= && dpkgArch="$(dpkg --print-architecture)" \
+  && case "${dpkgArch##*-}" in \
+  amd64) ARCH='x64';; \
+  ppc64el) ARCH='ppc64le';; \
+  s390x) ARCH='s390x';; \
+  arm64) ARCH='arm64';; \
+  armhf) ARCH='armv7l';; \
+  i386) ARCH='x86';; \
+  *) echo "unsupported architecture"; exit 1 ;; \
+  esac \
+  && set -ex \
+  && apt-get update && apt-get install -y ca-certificates curl wget gnupg dirmngr $buildDeps --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/* \
   && for key in \
   94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
   FD3A5288F042B6850C66B31F09FE44734EB7990E \
@@ -19,31 +32,16 @@ RUN apt-get update && apt-get install -yq gnupg dirmngr --no-install-recommends 
   gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
   gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
   gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
-  done
-
-ENV NODE_VERSION 10.12.0
-
-RUN buildDeps='xz-utils' \
-  && ARCH= && dpkgArch="$(dpkg --print-architecture)" \
-  && case "${dpkgArch##*-}" in \
-  amd64) ARCH='x64';; \
-  ppc64el) ARCH='ppc64le';; \
-  s390x) ARCH='s390x';; \
-  arm64) ARCH='arm64';; \
-  armhf) ARCH='armv7l';; \
-  i386) ARCH='x86';; \
-  *) echo "unsupported architecture"; exit 1 ;; \
-  esac \
-  && set -x \
-  && apt-get update && apt-get install -y ca-certificates curl wget $buildDeps --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/* \
+  done \
   && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH.tar.xz" \
   && curl -fsSLO --compressed "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
   && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
   && grep " node-v$NODE_VERSION-linux-$ARCH.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
   && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
   && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-  && apt-get purge -y --auto-remove $buildDeps gnupg \
+  && apt-get purge -y --auto-remove gnupg dirmngr $buildDeps \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+
+RUN useradd node && mkdir -p /home/node && chown -R node:node /home/node
 
 CMD [ "node" ]

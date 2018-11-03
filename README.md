@@ -5,9 +5,8 @@
 
 Same than [nodejs/docker-node/10/slim](https://github.com/nodejs/docker-node/blob/master/10/slim/Dockerfile) with a more recent debian base and [no yarn](https://github.com/nodejs/docker-node/issues/777)
 ```
-caub/node           latest              babf0e8aa290        11 minutes ago      155MB
-node                slim                600cfaaa323f        11 days ago         184MB
-node                carbon-slim         c136029ee5fc        11 days ago         179MB
+caub/node           latest              df4d2cf1ee52        40 seconds ago      134MB
+node                slim                6e43d0e35fbf        12 hours ago        144MB
 ```
 
 ### puppeteer

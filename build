@@ -8,3 +8,8 @@ for d in $ds; do
   docker build -t caub/$dir:latest $dir -f $dir/Dockerfile
   docker push caub/$dir
 done
+
+# build node11 (get a GH_TOKEN at https://github.com/settings/tokens)
+nodeLatestVersion=$(curl -sH "Authorization: bearer $GH_TOKEN" https://api.github.com/repos/nodejs/node/tags?per_page=1 | jq -r '.[0].name')
+docker build -t caub/node:11 --build-arg NODE_VERSION=${nodeLatestVersion/v/} node -f node/Dockerfile
+docker push caub/node

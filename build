@@ -10,7 +10,12 @@ for d in $ds; do
 done
 
 if [[ ! $1 || $1 == 'node' ]]; then
-  docker build -t caub/node . -f -< <(curl -s https://raw.githubusercontent.com/nodejs/docker-node/master/11/stretch-slim/Dockerfile | sed -e '/ENV YARN/,$d')
+  dockerfile=$(curl -s https://raw.githubusercontent.com/nodejs/docker-node/master/11/stretch-slim/Dockerfile | sed -e '/RUN groupadd/,+2d' | sed -e '/ENV YARN/,$d')
+  docker build -t caub/node . -f -<<EOF
+$dockerfile
+RUN useradd node && mkdir -p /home/node && chown -R node:node /home/node
+CMD ["node"]
+EOF
   docker push caub/node
 fi
 

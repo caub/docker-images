@@ -1,4 +1,4 @@
-FROM caub/node
+FROM node:10-slim
 
 # https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-in-docker
 RUN apt-get update && apt-get install -yq libgconf-2-4

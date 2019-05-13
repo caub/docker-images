@@ -1,18 +1,27 @@
 ## Docker images
 
+### bcrypt
 
-### node
-
-Same than [nodejs/docker-node/10/slim](https://github.com/nodejs/docker-node/blob/master/10/slim/Dockerfile) with a more recent debian base and [no yarn](https://github.com/nodejs/docker-node/issues/777)
+Run bcrypt from command-line
+```sh
+docker run --rm -i caub/bcrypt <<<'hello world'
 ```
-caub/node           latest              df4d2cf1ee52        40 seconds ago      134MB
-node                slim                6e43d0e35fbf        12 hours ago        144MB
+
+### nginx-dev
+
+A basic static server useful for development
+```sh
+docker run --rm -p 8000:80 -v $PWD:/usr/share/nginx/html:ro caub/nginx-dev
+```
+
+### node-ci
+
+node:10-slim with `git` installed for CI
+```sh
+docker run --rm caub/node:10-ci git --version
 ```
 
 ### puppeteer
 
 Same as mentioned in [GoogleChrome/puppeteer/docs/troubleshooting.md#running-puppeteer-in-docker](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#running-puppeteer-in-docker)
 
-### nginx-dev
-
-A basic static server useful for development
